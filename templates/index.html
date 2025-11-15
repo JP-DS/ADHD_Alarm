@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Alarm - Stay Focused</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Fallback styles in case CSS doesn't load */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        .card {
+            background: #2c3e50;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .title {
+            color: #ecf0f1;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .timer-display {
+            color: #3498db;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            color: #ecf0f1;
+            background: #34495e;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        label {
+            color: #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="title">Focus Alarm</h1>
+            
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="time-inputs">
+                <div class="input-group">
+                    <label for="hours">Hours:</label>
+                    <input type="number" id="hours" min="0" max="24" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="minutes">Minutes:</label>
+                    <input type="number" id="minutes" min="0" max="59" value="25">
+                </div>
+                <div class="input-group">
+                    <label for="seconds">Seconds:</label>
+                    <input type="number" id="seconds" min="0" max="59" value="0">
+                </div>
+            </div>
+            
+            <div class="sound-section">
+                <label for="soundSelect">Sound:</label>
+                <select id="soundSelect" class="sound-select">
+                    <option value="Default Beep">Default Beep</option>
+                    <option value="iPhone Radar">iPhone Radar</option>
+                    <option value="iPhone Beacon">iPhone Beacon</option>
+                    <option value="iPhone Bulletin">iPhone Bulletin</option>
+                    <option value="iPhone Signal">iPhone Signal</option>
+                    <option value="iPhone Hillside">iPhone Hillside</option>
+                    <option value="iPhone Playtime">iPhone Playtime</option>
+                    <option value="iPhone Sencha">iPhone Sencha</option>
+                </select>
+                <button id="testSoundBtn" class="btn btn-test">Test Sound</button>
+            </div>
+            
+            <div class="audio-status" id="audioStatus">Audio: Ready</div>
+            
+            <div class="controls">
+                <button id="startBtn" class="btn btn-start">Start Focus Session</button>
+                <button id="stopBtn" class="btn btn-stop" disabled>Stop</button>
+            </div>
+            
+            <div class="status" id="status">Ready to start your focus session</div>
+            
+            <div class="info-box">
+                <h3>Focus Alarm Features:</h3>
+                <ul>
+                    <li>Set custom timer duration</li>
+                    <li>Random sound intervals (3-5 minutes)</li>
+                    <li>8 iPhone-style alarm sounds</li>
+                    <li>Test sound feature</li>
+                    <li>Visual progress indicator</li>
+                    <li>Clean, distraction-free interface</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+
