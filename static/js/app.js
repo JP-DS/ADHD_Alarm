@@ -155,15 +155,23 @@ class FocusAlarm {
         this.playSound();
     }
     
-    playSound() {
+    async playSound() {
         if (!this.audioContext) {
             // Try to resume audio context (browsers require user interaction)
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
         
         // Resume audio context if suspended (required by some browsers)
+        // MUST await this or sounds won't play after inactivity
         if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
+            try {
+                await this.audioContext.resume();
+                this.updateAudioStatus('Audio: Active', true);
+            } catch (e) {
+                console.error('Failed to resume audio context:', e);
+                this.updateAudioStatus('Audio: Suspended', false);
+                return;
+            }
         }
         
         try {
