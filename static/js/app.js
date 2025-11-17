@@ -7,6 +7,9 @@ class FocusAlarm {
         this.soundInterval = null;
         this.audioContext = null;
         this.currentSound = 'Default Beep';
+        this.startTime = null;  // Track actual start time
+        this.endTime = null;    // Track when timer should end
+        this.nextSoundTime = null; // Track next sound time
         
         this.initializeAudio();
         this.setupEventListeners();
@@ -50,7 +53,9 @@ class FocusAlarm {
             return;
         }
         
-        this.remainingTime = this.totalTime;
+        // Use real timestamps instead of counting
+        this.startTime = Date.now();
+        this.endTime = this.startTime + (this.totalTime * 1000);
         this.isRunning = true;
         
         // Update UI
@@ -58,10 +63,10 @@ class FocusAlarm {
         document.getElementById('stopBtn').disabled = false;
         document.getElementById('status').textContent = 'Focus session in progress...';
         
-        // Start timer
+        // Start timer with real time tracking
         this.timerInterval = setInterval(() => this.updateTimer(), 1000);
         
-        // Start sound loop
+        // Start sound loop with real time tracking
         this.startSoundLoop();
         
         // Play start sound immediately
@@ -70,7 +75,9 @@ class FocusAlarm {
     
     stopTimer() {
         this.isRunning = false;
-        this.remainingTime = 0;
+        this.startTime = null;
+        this.endTime = null;
+        this.nextSoundTime = null;
         
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
@@ -91,41 +98,57 @@ class FocusAlarm {
     }
     
     updateTimer() {
-        if (!this.isRunning || this.remainingTime <= 0) {
+        if (!this.isRunning) {
+            return;
+        }
+        
+        // Calculate remaining time based on real timestamps
+        const now = Date.now();
+        const remainingMs = this.endTime - now;
+        
+        if (remainingMs <= 0) {
             this.sessionComplete();
             return;
         }
         
-        const hours = Math.floor(this.remainingTime / 3600);
-        const minutes = Math.floor((this.remainingTime % 3600) / 60);
-        const seconds = this.remainingTime % 60;
+        // Convert to hours, minutes, seconds
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+        const seconds = remainingSeconds % 60;
         
         const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         document.getElementById('timerDisplay').textContent = timeStr;
         
-        const progress = ((this.totalTime - this.remainingTime) / this.totalTime) * 100;
+        // Calculate progress based on real time elapsed
+        const elapsed = now - this.startTime;
+        const progress = (elapsed / (this.totalTime * 1000)) * 100;
         document.getElementById('progressBar').style.width = `${progress}%`;
-        
-        this.remainingTime--;
     }
     
     startSoundLoop() {
-        // Play sound at random intervals (3-5 minutes)
-        const playNextSound = () => {
+        // Schedule next sound with random interval (3-5 minutes)
+        const scheduleNextSound = () => {
             if (!this.isRunning) return;
             
             // Random interval between 3-5 minutes (180-300 seconds)
-            const interval = Math.random() * (300 - 180) + 180;
-            
-            setTimeout(() => {
-                if (this.isRunning && this.remainingTime > 0) {
-                    this.playSound();
-                    playNextSound(); // Schedule next sound
-                }
-            }, interval * 1000);
+            const interval = (Math.random() * (300 - 180) + 180) * 1000; // in milliseconds
+            this.nextSoundTime = Date.now() + interval;
         };
         
-        playNextSound();
+        // Initial sound schedule
+        scheduleNextSound();
+        
+        // Check every second if it's time to play sound (based on real time)
+        this.soundInterval = setInterval(() => {
+            if (!this.isRunning) return;
+            
+            const now = Date.now();
+            if (this.nextSoundTime && now >= this.nextSoundTime) {
+                this.playSound();
+                scheduleNextSound(); // Schedule next sound
+            }
+        }, 1000);
     }
     
     testSound() {
