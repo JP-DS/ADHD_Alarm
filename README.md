@@ -1,149 +1,86 @@
-# Focus Alarm App
+# Focus Alarm ⏰
 
-A local alarm application designed to help you maintain focus during work or study sessions. The app features a countdown timer with random sound intervals to keep you alert and engaged.
+A minimalist focus timer with random interval alarms to help you stay on task. Perfect for ADHD, Pomodoro technique, or any focused work session.
 
-## Features
+## ✨ Features
 
-- **Customizable Timer**: Set any duration from seconds to hours
-- **Random Sound Intervals**: Sounds play at random intervals between 3-5 minutes (uniformly distributed)
-- **8 iPhone-style Sounds**: Choose from 8 built-in sound options including beeps, chimes, bells, and gongs
-- **Visual Progress**: Real-time countdown display with progress bar
-- **Clean Interface**: Modern, distraction-free UI
-- **Session Management**: Start, stop, and track your focus sessions
+- **Custom Timer**: Set hours, minutes, and seconds
+- **Random Sound Intervals**: Alerts play every 3-5 minutes (uniformly distributed)
+- **8 iPhone-Style Sounds**: Radar, Beacon, Signal, and more
+- **Visual Progress**: Clean progress bar and countdown display
+- **Always Active**: Works in background tabs and when screen dims
+- **No Backend Required**: Runs 100% in your browser using Web Audio API
 
-## Quick Start
+## 🚀 Live Demo
 
-### Web Version (Recommended for Public Website)
+Visit: [Your Render URL]
 
-**Run locally:**
+## 🎯 How It Works
+
+1. Set your focus session duration
+2. Choose your preferred alert sound
+3. Click "Start Focus Session"
+4. Stay focused! Random alarms will remind you to check in every 3-5 minutes
+5. Complete your session with a celebration sound
+
+## 🛠️ Technology
+
+- **Pure HTML/CSS/JavaScript** - No frameworks needed
+- **Web Audio API** - Generates sounds in real-time
+- **Real-time tracking** - Uses timestamps for accurate timing even in background
+- **Static hosting** - Deployed on Render (or any static host)
+
+## 📱 Works Everywhere
+
+- ✅ Desktop browsers (Chrome, Firefox, Safari, Edge)
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+- ✅ Background tabs (timer continues accurately)
+- ✅ Dimmed screens (sounds still play)
+- ✅ Offline capable (after first load)
+
+## 🔧 Local Development
+
 ```bash
-pip install flask
-python app.py
-```
-Then open `http://localhost:5000` in your browser.
+# Clone the repo
+git clone https://github.com/JP-DS/ADHD_Alarm.git
+cd ADHD_Alarm
 
-**Deploy to production:**
-- Deploy to any platform that supports Flask (Heroku, Railway, Render, etc.)
-- Or use static hosting (Netlify, Vercel) by serving the `static` and `templates` folders
+# Open directly in browser
+open index.html
 
-### Standalone App (macOS)
-
-**For macOS users:**
-1. Download the `Focus Alarm` executable from the `dist` folder
-2. Double-click to run (no installation required)
-3. If you get a security warning, go to System Preferences > Security & Privacy and click "Open Anyway"
-
-## Installation (Development)
-
-1. **Install Python Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Run the Desktop Application**:
-   ```bash
-   python focus_alarm.py
-   ```
-
-3. **Run the Web Application**:
-   ```bash
-   python app.py
-   ```
-   Then open `http://localhost:5000` in your browser.
-
-## Usage
-
-1. **Set Timer Duration**:
-   - Use the spinboxes to set hours, minutes, and seconds
-   - Default is set to 25 minutes (Pomodoro technique)
-
-2. **Choose Your Sound**:
-   - Use the dropdown menu to select from 8 built-in sound options:
-     - Default Beep
-     - iPhone Radar
-     - iPhone Beacon
-     - iPhone Bulletin
-     - iPhone Signal
-     - iPhone Hillside
-     - iPhone Playtime
-     - iPhone Sencha
-   - Click "Test Sound" to preview your selection
-
-3. **Start Focus Session**:
-   - Click "Start Focus Session" to begin
-   - The timer will count down and sounds will play at random intervals
-
-4. **Monitor Progress**:
-   - Watch the countdown timer and progress bar
-   - Status updates show current session state
-
-5. **Stop or Complete**:
-   - Click "Stop" to end the session early
-   - When the timer reaches zero, you'll hear 3 beeps and see a completion message
-
-## How It Works
-
-- **Timer**: Counts down from your set duration in real-time
-- **Random Sounds**: Every 3-5 minutes (randomly distributed), your chosen sound will play
-- **Threading**: Uses separate threads for timer and sound management to prevent UI freezing
-- **Sound Generation**: Creates iPhone-style alarm sounds using mathematical algorithms
-
-## System Requirements
-
-- **Standalone App**: macOS 10.13 or later (no Python required)
-- **Development**: Python 3.7 or higher, macOS, Windows, or Linux
-- Audio output capability
-
-## Troubleshooting
-
-- **No Sound**: The app will fall back to system beep if pygame audio fails
-- **UI Issues**: Make sure you have tkinter installed (usually comes with Python)
-- **Dependencies**: Run `pip install -r requirements.txt` if you encounter import errors
-- **Security Warning**: On macOS, you may need to allow the app in Security & Privacy settings
-
-## Customization
-
-You can modify the sound intervals by changing the values in the `sound_loop()` method:
-```python
-# Random interval between 3-5 minutes (180-300 seconds)
-interval = random.uniform(180, 300)
+# Or use a local server
+python3 -m http.server 8000
+# Visit: http://localhost:8000
 ```
 
-## Web Deployment
+## 📦 Deployment
 
-### Deploy to Heroku
+### Render (Current)
+Already deployed! Just push changes to main branch.
 
-1. Create a `Procfile`:
-   ```
-   web: python app.py
-   ```
-
-2. Deploy:
-   ```bash
-   heroku create your-app-name
-   git push heroku main
-   ```
-
-### Deploy to Railway/Render
-
-1. Connect your repository
-2. Set start command: `python app.py`
-3. Deploy automatically
-
-### Deploy as Static Site (Netlify/Vercel)
-
-The web app can also be served as a static site. You'll need to modify `app.js` to remove Flask template syntax and serve files directly.
-
-## Building the Standalone App
-
-To create your own executable:
+### Vercel
 ```bash
-pip install pyinstaller
-pyinstaller focus_alarm.spec
+vercel --prod
 ```
 
-The executable will be created in the `dist` folder.
+### Netlify
+```bash
+netlify deploy --prod
+```
 
-## License
+### GitHub Pages
+Push to `gh-pages` branch or enable in repo settings.
 
-This project is open source and available under the MIT License.
+## 🎨 Customization
+
+- **Sounds**: Edit sound functions in `js/app.js`
+- **Styling**: Modify colors/fonts in `css/style.css`
+- **Intervals**: Change min/max duration in `startSoundLoop()` function
+
+## 📝 License
+
+Free to use and modify!
+
+---
+
+Built with ❤️ for focus and productivity

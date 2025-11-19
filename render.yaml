@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: adhd-alarm
+    env: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
