@@ -262,5 +262,51 @@ body {
     }
 }
 
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #95a5a6;
+    font-size: 13px;
+}
 
+.footer p {
+    margin: 8px 0;
+}
+
+.footer-link {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #2ecc71;
+    text-decoration: underline;
+}
+
+/* Focus Mode: Hide controls when timer is running */
+.card.running .time-inputs,
+.card.running .sound-section,
+.card.running .title,
+.card.running .audio-status,
+.card.running .info-box,
+.card.running .footer {
+    display: none;
+}
+
+.card.running .timer-display {
+    font-size: 64px;
+    margin: 60px 0;
+}
+
+.card.running .controls {
+    justify-content: center;
+}
+
+.card.running .btn-stop {
+    max-width: 250px;
+}
 

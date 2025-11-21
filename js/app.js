@@ -63,6 +63,9 @@ class FocusAlarm {
         document.getElementById('stopBtn').disabled = false;
         document.getElementById('status').textContent = 'Focus session in progress...';
         
+        // Add 'running' class for minimalist view
+        document.querySelector('.card').classList.add('running');
+        
         // Start timer with real time tracking
         this.timerInterval = setInterval(() => this.updateTimer(), 1000);
         
@@ -95,6 +98,9 @@ class FocusAlarm {
         document.getElementById('status').textContent = 'Session stopped';
         document.getElementById('timerDisplay').textContent = '00:00:00';
         document.getElementById('progressBar').style.width = '0%';
+        
+        // Remove 'running' class to show controls again
+        document.querySelector('.card').classList.remove('running');
     }
     
     updateTimer() {
@@ -184,30 +190,31 @@ class FocusAlarm {
     
     getSoundFunction(soundName) {
         const sounds = {
-            'Default Beep': () => this.createBeep(800, 0.5),
-            'iPhone Radar': () => this.createRadar(),
-            'iPhone Beacon': () => this.createBeacon(),
-            'iPhone Bulletin': () => this.createBulletin(),
-            'iPhone Signal': () => this.createSignal(),
-            'iPhone Hillside': () => this.createHillside(),
-            'iPhone Playtime': () => this.createPlaytime(),
-            'iPhone Sencha': () => this.createSencha()
+            'Default Beep': () => this.createDefaultBeep(),
+            'Quick Bell': () => this.createQuickBell(),
+            'Gentle Ping': () => this.createGentlePing(),
+            'Water Drop': () => this.createWaterDrop(),
+            'Wind Chime': () => this.createWindChime(),
+            'Marimba': () => this.createMarimba(),
+            'Calm Ding': () => this.createCalmDing()
         };
         
         return sounds[soundName] || sounds['Default Beep'];
     }
     
-    createBeep(frequency, duration) {
+    // Default Beep - Original sound from old version
+    createDefaultBeep() {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         
         oscillator.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
         
-        oscillator.frequency.value = frequency;
+        oscillator.frequency.value = 800;
         oscillator.type = 'sine';
         
         const now = this.audioContext.currentTime;
+        const duration = 0.5;
         gainNode.gain.setValueAtTime(0, now);
         gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
         gainNode.gain.linearRampToValueAtTime(0, now + duration);
@@ -216,7 +223,63 @@ class FocusAlarm {
         oscillator.stop(now + duration);
     }
     
-    createRadar() {
+    // Quick Bell - High-pitched, crispy, clean metallic bell tap
+    createQuickBell() {
+        const now = this.audioContext.currentTime;
+        const duration = 0.22; // Even shorter for cleaner sound
+        
+        // High-pitched metal bell with bright harmonics for crispy, clean sound
+        const frequencies = [
+            { freq: 1760, gain: 0.28 },  // A6 - high fundamental
+            { freq: 2640, gain: 0.20 },  // 1.5x harmonic (brightness)
+            { freq: 3520, gain: 0.14 },  // 2x harmonic (crisp high end)
+            { freq: 5280, gain: 0.08 }   // 3x harmonic (ultra-crisp shimmer)
+        ];
+        
+        frequencies.forEach(({ freq, gain }) => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine'; // Pure tones for clean metallic quality
+            
+            // Ultra-sharp attack for maximum crispness
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(gain, now + 0.003); // Instant crisp attack
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+        });
+    }
+    
+    // Gentle Ping - Soft notification sound
+    createGentlePing() {
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.value = 880; // A5 note
+        oscillator.type = 'sine';
+        
+        const now = this.audioContext.currentTime;
+        const duration = 0.3;
+        
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+    }
+    
+    // Water Drop - Natural water droplet sound
+    createWaterDrop() {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         
@@ -224,194 +287,92 @@ class FocusAlarm {
         gainNode.connect(this.audioContext.destination);
         
         oscillator.type = 'sine';
+        
+        const now = this.audioContext.currentTime;
+        const duration = 0.4;
+        
+        // Frequency drops quickly like water
+        oscillator.frequency.setValueAtTime(800, now);
+        oscillator.frequency.exponentialRampToValueAtTime(400, now + duration);
+        
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+    }
+    
+    // Wind Chime - Multiple gentle tones
+    createWindChime() {
+        const notes = [659, 784, 880, 1047]; // E5, G5, A5, C6
+        const now = this.audioContext.currentTime;
+        
+        notes.forEach((freq, i) => {
+            const delay = i * 0.08;
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'triangle';
+            
+            const startTime = now + delay;
+            const duration = 1.2;
+            
+            gainNode.gain.setValueAtTime(0, startTime);
+            gainNode.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        });
+    }
+    
+    // Marimba - Warm wooden tone
+    createMarimba() {
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.value = 440; // A4 note
+        oscillator.type = 'triangle';
         
         const now = this.audioContext.currentTime;
         const duration = 0.8;
         
-        // Frequency sweep (ascending)
-        oscillator.frequency.setValueAtTime(800, now);
-        oscillator.frequency.exponentialRampToValueAtTime(1200, now + duration);
-        
-        // Gain envelope with echo effect
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.4);
-        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.6);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
+        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
         
         oscillator.start(now);
         oscillator.stop(now + duration);
     }
     
-    createBeacon() {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        lfo.connect(lfoGain);
-        lfoGain.connect(gainNode.gain);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 600;
-        lfo.type = 'sine';
-        lfo.frequency.value = 2; // 2 Hz pulse
-        lfoGain.gain.value = 0.3;
-        
-        const now = this.audioContext.currentTime;
-        const duration = 1.2;
-        
-        gainNode.gain.setValueAtTime(0.4, now);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        
-        oscillator.start(now);
-        lfo.start(now);
-        oscillator.stop(now + duration);
-        lfo.stop(now + duration);
-    }
-    
-    createBulletin() {
+    // Calm Ding - Subtle reminder
+    createCalmDing() {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         
         oscillator.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
         
+        oscillator.frequency.value = 698; // F5 note
         oscillator.type = 'sine';
-        oscillator.frequency.value = 1000;
-        
-        const now = this.audioContext.currentTime;
-        const duration = 1.0;
-        
-        // Sharp attack and decay
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.4, now + 0.05);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.2);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        
-        oscillator.start(now);
-        oscillator.stop(now + duration);
-    }
-    
-    createSignal() {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        lfo.connect(lfoGain);
-        lfoGain.connect(oscillator.frequency);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 1200;
-        lfo.type = 'sine';
-        lfo.frequency.value = 4; // 4 Hz FM
-        lfoGain.gain.value = 50; // FM depth
         
         const now = this.audioContext.currentTime;
         const duration = 0.6;
         
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.03);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
         
         oscillator.start(now);
-        lfo.start(now);
         oscillator.stop(now + duration);
-        lfo.stop(now + duration);
-    }
-    
-    createHillside() {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        lfo.connect(lfoGain);
-        lfoGain.connect(oscillator.frequency);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 400;
-        lfo.type = 'sine';
-        lfo.frequency.value = 6; // 6 Hz vibrato
-        lfoGain.gain.value = 20; // Vibrato depth
-        
-        const now = this.audioContext.currentTime;
-        const duration = 1.5;
-        
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.3);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        
-        oscillator.start(now);
-        lfo.start(now);
-        oscillator.stop(now + duration);
-        lfo.stop(now + duration);
-    }
-    
-    createPlaytime() {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        lfo.connect(lfoGain);
-        lfoGain.connect(gainNode.gain);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 800;
-        lfo.type = 'sine';
-        lfo.frequency.value = 12; // 12 Hz modulation
-        lfoGain.gain.value = 0.2;
-        
-        const now = this.audioContext.currentTime;
-        const duration = 0.8;
-        
-        gainNode.gain.setValueAtTime(0.3, now);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        
-        oscillator.start(now);
-        lfo.start(now);
-        oscillator.stop(now + duration);
-        lfo.stop(now + duration);
-    }
-    
-    createSencha() {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        lfo.connect(lfoGain);
-        lfoGain.connect(oscillator.frequency);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 300;
-        lfo.type = 'sine';
-        lfo.frequency.value = 2; // 2 Hz vibrato
-        lfoGain.gain.value = 10; // Vibrato depth
-        
-        const now = this.audioContext.currentTime;
-        const duration = 2.0;
-        
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.4);
-        gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        
-        oscillator.start(now);
-        lfo.start(now);
-        oscillator.stop(now + duration);
-        lfo.stop(now + duration);
     }
     
     sessionComplete() {
@@ -437,6 +398,9 @@ class FocusAlarm {
         document.getElementById('startBtn').disabled = false;
         document.getElementById('stopBtn').disabled = true;
         document.getElementById('status').textContent = 'Focus session completed!';
+        
+        // Remove 'running' class to show controls again
+        document.querySelector('.card').classList.remove('running');
         
         setTimeout(() => {
             alert('Great job! Your focus session is complete.');
