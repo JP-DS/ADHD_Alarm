@@ -42,11 +42,15 @@ class FocusAlarm {
     }
     
     startTimer() {
+        console.log('Start timer clicked');
         const hours = parseInt(document.getElementById('hours').value) || 0;
         const minutes = parseInt(document.getElementById('minutes').value) || 0;
-        const seconds = parseInt(document.getElementById('seconds').value) || 0;
         
-        this.totalTime = hours * 3600 + minutes * 60 + seconds;
+        console.log('Hours:', hours, 'Minutes:', minutes);
+        
+        this.totalTime = hours * 3600 + minutes * 60;
+        
+        console.log('Total time:', this.totalTime);
         
         if (this.totalTime <= 0) {
             alert('Please set a valid time duration');

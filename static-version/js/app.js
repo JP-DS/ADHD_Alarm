@@ -42,11 +42,15 @@ class FocusAlarm {
     }
     
     startTimer() {
+        console.log('Start timer clicked');
         const hours = parseInt(document.getElementById('hours').value) || 0;
         const minutes = parseInt(document.getElementById('minutes').value) || 0;
-        const seconds = parseInt(document.getElementById('seconds').value) || 0;
         
-        this.totalTime = hours * 3600 + minutes * 60 + seconds;
+        console.log('Hours:', hours, 'Minutes:', minutes);
+        
+        this.totalTime = hours * 3600 + minutes * 60;
+        
+        console.log('Total time:', this.totalTime);
         
         if (this.totalTime <= 0) {
             alert('Please set a valid time duration');
@@ -62,6 +66,9 @@ class FocusAlarm {
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
         document.getElementById('status').textContent = 'Focus session in progress...';
+        
+        // Add 'running' class for minimalist view
+        document.querySelector('.card').classList.add('running');
         
         // Start timer with real time tracking
         this.timerInterval = setInterval(() => this.updateTimer(), 1000);
@@ -88,6 +95,9 @@ class FocusAlarm {
             clearInterval(this.soundInterval);
             this.soundInterval = null;
         }
+        
+        // Remove 'running' class to show controls again
+        document.querySelector('.card').classList.remove('running');
         
         // Update UI
         document.getElementById('startBtn').disabled = false;
